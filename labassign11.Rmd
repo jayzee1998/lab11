@@ -1,0 +1,72 @@
+#Q1
+```{r}
+rbinom1 <- function (n, samples, p ){
+  x <-replicate (n, { a <- replicate (samples, runif ( 1 ) <= p)
+          sum(a) })
+ return (x)
+  }
+```
+
+#Q2
+```{r}
+library (microbenchmark)
+microbenchmark(rbinom1(30, 30, 0.3), rbinom(30, 30, 0.3))
+
+```
+
+#Q3
+```{r}
+library (tidyverse)
+set.seed (1)
+bet0 <- 15
+bet1 <- 0.4
+run <- 50
+
+matrix_ <- replicate (run, {
+  x <- runif (1, 19.5, 40.5)
+  error <- rnorm (1, 0, 3)
+  y <- bet0 + bet1 * x + error
+  c(x, y, error)
+}) %>%
+  matrix (nrow = 50, byrow = T )
+
+colnames(matrix_) <- c ( "x", "y", "error" )
+
+datfr <- data.frame ( matrix_ )
+
+
+datfr %>% ggplot (aes (x, y)) +
+    geom_abline () +
+  geom_point () +
+  ggtitle ("y vs x")
+
+datfr %>% ggplot (aes(error, y)) +
+  geom_point () +
+  ggtitle ("y vs error")
+```
+
+
+#Q4
+```{r}
+
+dat <- replicate (100, {
+  uo <- runif (1)
+  ut <- runif (1)
+  
+  R <- sqrt ((-2) * log(uo))
+  Tet <- 2 * pi * ut
+  
+  X1 <- R * cos(Tet)
+  X2 <- R * sin(Tet)
+  c(X1, X2)
+})
+ 
+norms <- rnorm(200)
+
+dat <- data.frame (val = matrix( c( dat, norms ), ncol = 1), source = c(rep( "stimu", 200 ), rep( "real", 200 )))
+
+dat %>% ggplot()+
+  geom_histogram(aes(val, fill = type), alpha = 0.7)
+
+```
+
